@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Công cụ xử lý truyện dịch</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f6f4ef;--panel:#fff;--ink:#1f2328;--muted:#6b7280;--line:#e3dfd5;--accent:#2f6f5e;--accent-ink:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16181a;--panel:#1f2326;--ink:#e8e6e1;--muted:#9aa0a6;--line:#33393d;--accent:#5cb89f;--accent-ink:#0b1f19}}
+:root[data-theme="dark"]{--bg:#16181a;--panel:#1f2326;--ink:#e8e6e1;--muted:#9aa0a6;--line:#33393d;--accent:#5cb89f;--accent-ink:#0b1f19}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Be Vietnam Pro","Segoe UI",system-ui,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:40px 18px 56px}
+h1{font-size:28px;margin:0 0 6px}.sub{color:var(--muted);margin:0 0 28px}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:700px){.cards{grid-template-columns:1fr}}
+.card{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;text-decoration:none;color:inherit}
+.card:hover{border-color:var(--accent)}
+.ic{font-size:34px}.card h2{font-size:19px;margin:8px 0 6px}
+.card ul{margin:0 0 16px;padding-left:18px;color:var(--muted);font-size:14px;flex:1}
+.go{align-self:flex-start;background:var(--accent);color:var(--accent-ink);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.tip{margin-top:24px;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>📚 Công cụ xử lý truyện dịch</h1>
+  <p class="sub">Chọn công cụ bạn cần. Mỗi công cụ là một trang riêng.</p>
+  <div class="cards">
+    <a class="card" id="cChuong" href="#" target="_top">
+      <div class="ic">✏️</div><h2>Kiểm tra dịch chương</h2>
+      <ul>
+        <li>Quét tiêu đề, báo chương thiếu, lặp, sai thứ tự</li>
+        <li>Đánh dấu chương ít hơn 10 dòng</li>
+        <li>Xóa tiêu đề + chú thích từng chương, thay thế từ</li>
+        <li>Xuất file .txt hoàn chỉnh</li>
+      </ul><span class="go">Mở trang →</span>
+    </a>
+    <a class="card" id="cTu" href="#" target="_top">
+      <div class="ic">🔍</div><h2>Kiểm tra từ lỗi</h2>
+      <ul>
+        <li>Lọc từ không phải tiếng Việt / Anh</li>
+        <li>Lọc chữ lẫn số và ký tự lạ</li>
+        <li>Báo chương nào có lỗi, chương nào dưới 10 dòng</li>
+        <li>Xuất tu_loi.txt và chuong_loi.txt</li>
+      </ul><span class="go">Mở trang →</span>
+    </a>
+    <a class="card" id="cDoi" href="#" target="_top">
+      <div class="ic">🔢</div><h2>Đổi số &amp; chia chương</h2>
+      <ul>
+        <li>Đổi số chữ Hán (一, 二十, 一百零五…) sang số Ả Rập 1–2000</li>
+        <li>Xóa đoạn rác, chia thành các chương ≤ 2800 ký tự</li>
+        <li>Tải file tên theo định dạng: tên nhập + viết tắt chức năng</li>
+      </ul><span class="go">Mở trang →</span>
+    </a>
+  </div>
+  <p class="tip">Mỗi trang lưu dữ liệu riêng trong trình duyệt, nên dán truyện vào từng trang khi dùng.</p>
+</div>
+<script>
+const LINKS={home:"index.html",chuong:"kiem-tra-dich-chuong.html",tu:"kiem-tra-tu-loi.html",doi:"doi-so-chia-chuong.html"};
+document.getElementById('cChuong').href=LINKS.chuong;
+document.getElementById('cTu').href=LINKS.tu;
+document.getElementById('cDoi').href=LINKS.doi;
+</script>
+</body>
+</html>
