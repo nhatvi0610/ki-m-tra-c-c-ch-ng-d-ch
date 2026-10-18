@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Đổi số &amp; chia chương</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f6f4ef;--panel:#fff;--ink:#1f2328;--muted:#6b7280;--line:#e3dfd5;--accent:#2f6f5e;--accent-ink:#fff;--ok:#1a7f4b;--ok-bg:#e6f4ec;--warn:#b42318;--warn-bg:#fdecea;--mark:#fff3c4}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16181a;--panel:#1f2326;--ink:#e8e6e1;--muted:#9aa0a6;--line:#33393d;--accent:#5cb89f;--accent-ink:#0b1f19;--ok:#6fd3a0;--ok-bg:#16301f;--warn:#ff8a80;--warn-bg:#3a1d1b;--mark:#4a4220}}
+:root[data-theme="dark"]{--bg:#16181a;--panel:#1f2326;--ink:#e8e6e1;--muted:#9aa0a6;--line:#33393d;--accent:#5cb89f;--accent-ink:#0b1f19;--ok:#6fd3a0;--ok-bg:#16301f;--warn:#ff8a80;--warn-bg:#3a1d1b;--mark:#4a4220}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 "Be Vietnam Pro","Segoe UI",system-ui,sans-serif}
+.wrap{max-width:1300px;margin:0 auto;padding:16px 16px 48px}
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.nav a{padding:6px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);text-decoration:none;font-size:14px}
+.nav a.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+h1{font-size:22px;margin:0 0 4px}.sub{color:var(--muted);margin:0 0 16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+textarea,input[type=text],input[type=number]{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+textarea{min-height:46vh;resize:vertical}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:8px 14px;min-height:38px}
+button:hover:not(:disabled){border-color:var(--accent)}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.tabs button.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.tabs .arrow{color:var(--muted)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:800px){.cols{grid-template-columns:1fr}}
+h2{font-size:15px;margin:0 0 8px}
+.stat{background:var(--ok-bg);color:var(--ok);border-radius:8px;padding:8px 12px;margin-bottom:10px;font-weight:600}
+.stat.bad{background:var(--warn-bg);color:var(--warn)}
+.note{background:var(--mark);border-radius:8px;padding:6px 12px;margin-bottom:10px;font-size:13px}
+.muted{color:var(--muted);font-size:13px}.hidden{display:none!important}
+details{margin-top:8px}details summary{cursor:pointer;color:var(--muted)}
+.chg{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;max-height:150px;overflow:auto}
+.chg span{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:1px 8px;font-size:13px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:99px;font-size:14px;z-index:9}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="nav" id="nav"></div>
+<h1>🔢 Đổi số &amp; chia chương</h1>
+<p class="sub">Quy trình: <b>Đổi số Trung sang Việt</b> → kết quả tự thành văn bản gốc của <b>Làm sạch chia chương</b> → tải xuống. Có thêm chức năng kiểm tra thứ tự chương.</p>
+
+<div class="tabs" id="tabs"></div>
+<div class="card">
+  <div class="row">
+    <button class="primary" id="run">▶ Chạy</button>
+    <button id="all" class="hidden">▶▶ Chạy cả quy trình (đổi số → chia chương)</button>
+    <input type="file" id="file" accept=".txt,text/plain">
+    <label id="maxBox" class="row hidden" style="gap:6px">Tối đa <input type="number" id="maxLen" value="2800" min="200" step="100" style="width:100px"> ký tự / chương</label>
+  </div>
+  <div class="muted" id="desc" style="margin-top:8px"></div>
+</div>
+
+<div class="cols">
+  <div class="card"><h2>📥 Văn bản gốc</h2><div class="note hidden" id="note">ℹ Văn bản gốc này đang là <b>kết quả của bước Đổi số</b>. Bấm Chạy để làm sạch &amp; chia chương.</div><textarea id="src" placeholder="Dán văn bản vào đây…"></textarea></div>
+  <div class="card">
+    <h2>📤 Kết quả</h2>
+    <div class="stat hidden" id="stat"></div>
+    <textarea id="out" readonly></textarea>
+    <details id="dt" class="hidden"><summary>Xem các chỗ đã đổi</summary><div class="chg" id="chg"></div></details>
+    <div class="row" style="margin-top:10px">
+      <button id="goSplit" class="hidden primary">Qua bước Làm sạch chia chương →</button>
+      <button id="copy">Sao chép</button>
+      <input type="text" id="nameIn" placeholder="Tên file (VD: truyen1)" style="width:170px">
+      <button class="primary" id="dl">⬇ Tải xuống</button>
+    </div>
+    <div class="muted" id="fn" style="margin-top:6px"></div>
+  </div>
+</div>
+</div>
+<div class="toast hidden" id="toast"></div>
+<script>
+const LINKS={home:"index.html",chuong:"kiem-tra-dich-chuong.html",tu:"kiem-tra-tu-loi.html",doi:"doi-so-chia-chuong.html"};
+(function(){
+const $=id=>document.getElementById(id);
+[['home','🏠 Trang chủ'],['chuong','✏️ Kiểm tra dịch chương'],['tu','🔍 Kiểm tra từ lỗi'],['doi','🔢 Đổi số & chia chương']].forEach(([k,t])=>{
+  const a=document.createElement('a');a.textContent=t;a.href=LINKS[k];a.target='_top';if(k==='doi')a.className='on';$('nav').appendChild(a);});
+
+const abbr=l=>l.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/Đ/g,'D').split(/\s+/).filter(Boolean).map(w=>w[0].toUpperCase()).join('');
+
+// ---------- Đổi số Trung -> số Việt ----------
+const DIG={'零':0,'〇':0,'一':1,'二':2,'两':2,'兩':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9};
+const UNI={'十':10,'百':100,'千':1000};
+function c2n(t){let r=0,c=0;for(const ch of t){if(ch in DIG)c=DIG[ch];else if(ch in UNI){if(c===0)c=1;r+=c*UNI[ch];c=0;}}return r+c;}
+const PAT=/[零〇一二两兩三四五六七八九十百千]+/g;
+function runNum(text){
+  const map=new Map();let n=0;
+  const out=text.replace(PAT,s=>{
+    if(/[十百千]/.test(s)||s.length===1){const v=c2n(s);if(v>=1&&v<=2000){n++;const k=s+' → '+v;map.set(k,(map.get(k)||0)+1);return String(v);}}
+    return s;});
+  return {out,stat:`Đã đổi ${n} chỗ (${map.size} kiểu khác nhau)`,changes:[...map].sort((a,b)=>b[1]-a[1])};
+}
+
+// ---------- Làm sạch + chia chương ----------
+function splitChunks(text,max){
+  const ch=[];let start=0;const n=text.length;
+  while(start<n){let end=start+max;
+    if(end<n){const nl=text.lastIndexOf('\n',end-1);if(nl>start)end=nl;}
+    ch.push(text.slice(start,end));start=end;}
+  return ch;
+}
+function runSplit(text){
+  const max=Math.max(200,parseInt($('maxLen').value)||2800);
+  const raw=text.replace(/\r\n?/g,'\n').replace(/^\n+|\s+$/g,'');
+  const blocks=raw.split('\n\n');
+  const keep=blocks.filter(b=>!b.includes('\n')&&b.trim()!=='');
+  const clean=keep.join('\n\n');
+  const chs=clean.length<=max?[clean]:splitChunks(clean,max);
+  const out=chs.map((c,i)=>`===== CHƯƠNG ${i+1} =====\n${c.replace(/^\n+|\n+$/g,'')}\n\n`).join('');
+  return {out,stat:`Bỏ ${blocks.length-keep.length} đoạn rác · còn ${clean.length.toLocaleString('vi')} ký tự · chia thành ${chs.length} chương (≤ ${max} ký tự)`,changes:[]};
+}
+
+// ---------- Kiểm tra thứ tự chương ----------
+// Đoạn rác = block (cách nhau 2 lần xuống dòng) có xuống dòng đơn bên trong.
+// Đoạn rác ghi "第N章" mở đầu một chương; phần giữa 2 đoạn rác như vậy là 1 chương.
+const MARK=[/第\s*([零〇一二两兩三四五六七八九十百千\d]+)\s*章/,/chương\s*(\d+)/i];
+function markerNum(b){for(const re of MARK){const m=b.match(re);if(m){const s=m[1];return /^\d+$/.test(s)?parseInt(s,10):c2n(s);}}return null;}
+const rng=(a,b)=>a===b?`${a}`:`${a}–${b}`;
+function runCheck(text){
+  const blocks=text.replace(/\r\n?/g,'\n').split('\n\n').map(b=>b.replace(/^\n+|\s+$/g,'')).filter(b=>b.trim());
+  const chs=[];let cur=null;
+  for(const b of blocks){
+    if(b.includes('\n')){
+      const n=markerNum(b);
+      if(n!=null&&!(cur&&cur.n===n&&cur.paras===0)){cur={n,paras:0};chs.push(cur);}
+    } else if(cur) cur.paras++;
+  }
+  if(!chs.length) return {out:'Không tìm thấy đoạn rác nào có ghi số chương (vd 第一章).',stat:'Không tìm thấy chương nào',bad:true,changes:[]};
+  const issues=[];let max=0;const seen=new Set();
+  chs.forEach((c,i)=>{
+    const n=c.n;
+    if(seen.has(n))issues.push(`Chương ${n} bị lặp (xuất hiện lần nữa ở vị trí thứ ${i+1}).`);
+    else if(n>max+1)issues.push(`Thiếu chương ${rng(max+1,n-1)} (nhảy từ chương ${max||'đầu'} sang chương ${n}).`);
+    else if(n<max)issues.push(`Chương ${n} nằm sai thứ tự (đứng sau chương ${max}).`);
+    seen.add(n);if(n>max)max=n;
+    if(c.paras===0)issues.push(`Chương ${n} không có đoạn văn nào.`);
+  });
+  const out=`KIỂM TRA THỨ TỰ CHƯƠNG\n======================\nTìm thấy ${chs.length} chương (từ ${Math.min(...chs.map(c=>c.n))} đến ${max})\nSố lỗi: ${issues.length}\n\n`
+    +(issues.length?issues.map((s,k)=>(k+1)+'. '+s).join('\n'):'Thứ tự các chương đúng, không thiếu chương nào.')
+    +`\n\nThứ tự trong file:\n${chs.map(c=>c.n).join(', ')}\n`;
+  return {out,stat:issues.length?`${issues.length} lỗi trong ${chs.length} chương`:`Thứ tự đúng · ${chs.length} chương`,bad:issues.length>0,issues:issues.length,changes:[]};
+}
+
+// ---------- Trạng thái & giao diện ----------
+const MODES={
+  num:{label:'Đổi số Trung sang Việt',run:runNum,desc:'Đổi số chữ Hán (一, 二十, 一百零五…) thành số Ả Rập, chỉ trong khoảng 1–2000. Kết quả tự động trở thành văn bản gốc của bước "Làm sạch chia chương".'},
+  split:{label:'Làm sạch chia chương',run:runSplit,desc:'Xóa các đoạn "rác" (đoạn có xuống dòng đơn bên trong), giữ đoạn văn thật, rồi chia thành các khối ≤ số ký tự tối đa, mỗi khối có dòng "===== CHƯƠNG i =====".'},
+  check:{label:'Kiểm tra thứ tự chương',run:runCheck,desc:'Dùng văn bản CHƯA làm sạch. Đoạn rác ghi số chương (vd 第一章 = chương 1) mở đầu mỗi chương; kiểm tra các số chương có liên tục 1…n, không thiếu, không lặp, không sai thứ tự.'}
+};
+let mode=null,fromNum=false;
+const inputs={num:'',split:'',check:''},res={};
+
+function showRes(){
+  const r=res[mode];
+  $('out').value=r?r.out:'';
+  $('stat').classList.toggle('hidden',!r);
+  if(r){$('stat').textContent=r.stat;$('stat').classList.toggle('bad',!!r.bad);}
+  $('chg').innerHTML='';
+  if(r)r.changes.slice(0,200).forEach(([k,c])=>{const s=document.createElement('span');s.textContent=c>1?k+' ×'+c:k;$('chg').appendChild(s);});
+  $('dt').classList.toggle('hidden',!(r&&r.changes.length));
+  $('goSplit').classList.toggle('hidden',!(mode==='num'&&res.num));
+  $('note').classList.toggle('hidden',!(mode==='split'&&fromNum));
+}
+function setMode(m){
+  if(mode)inputs[mode]=$('src').value;
+  mode=m;$('src').value=inputs[m];
+  $('tabs').innerHTML='';
+  Object.keys(MODES).forEach((k,i)=>{
+    const b=document.createElement('button');b.textContent=MODES[k].label+'  ('+abbr(MODES[k].label)+')';b.className=k===m?'on':'';b.onclick=()=>setMode(k);$('tabs').appendChild(b);
+    if(k==='num'){const a=document.createElement('span');a.className='arrow';a.textContent='→';$('tabs').appendChild(a);}
+    if(k==='split'){const a=document.createElement('span');a.className='arrow';a.textContent='|';$('tabs').appendChild(a);}
+  });
+  $('desc').textContent=MODES[m].desc;
+  $('maxBox').classList.toggle('hidden',m!=='split');
+  $('all').classList.toggle('hidden',m!=='num');
+  showRes();upFn();
+}
+function baseName(){return ($('nameIn').value||'').trim().replace(/[\\/:*?"<>|]+/g,'_')||'truyen';}
+function fileName(){return baseName()+'_'+abbr(MODES[mode].label)+'.txt';}
+function upFn(){$('fn').textContent='Tên file khi tải: '+fileName();}
+function toast(m){const t=$('toast');t.textContent=m;t.classList.remove('hidden');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.add('hidden'),2600);}
+
+$('run').onclick=()=>{
+  const t=$('src').value;if(!t.trim()){toast('Hãy dán văn bản trước');return;}
+  inputs[mode]=t;
+  const r=MODES[mode].run(t);res[mode]=r;
+  if(mode==='num'){
+    inputs.split=r.out;fromNum=true;
+    r.stat+=' · Kết quả đã chuyển sang "Làm sạch chia chương" làm văn bản gốc';
+  } else if(mode==='split'){ fromNum=fromNum&&true; }
+  showRes();
+};
+$('goSplit').onclick=()=>setMode('split');
+$('all').onclick=()=>{
+  const t=$('src').value;if(!t.trim()){toast('Hãy dán văn bản trước');return;}
+  inputs.num=t;
+  const r1=runNum(t);res.num=r1;
+  inputs.split=r1.out;inputs.check=r1.out;fromNum=true;
+  const c=runCheck(r1.out);res.check=c;
+  const r2=runSplit(r1.out);
+  r2.stat=`${r1.stat} → ${r2.stat} · Thứ tự chương: ${c.stat}`;
+  r2.bad=c.bad;res.split=r2;
+  setMode('split');
+  toast(c.bad?'Xong, nhưng thứ tự chương có lỗi — xem tab Kiểm tra thứ tự chương':'Đã đổi số và chia chương thành công');
+};
+$('src').addEventListener('input',()=>{if(mode==='split'&&fromNum){fromNum=false;$('note').classList.add('hidden');}});
+$('file').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{$('src').value=r.result;if(mode==='split')fromNum=false;showRes();toast('Đã nạp file');};r.readAsText(f,'utf-8');};
+$('copy').onclick=async()=>{const t=$('out').value;if(!t){toast('Chưa có kết quả');return;}try{await navigator.clipboard.writeText(t);toast('Đã sao chép');}catch(e){$('out').select();document.execCommand('copy');toast('Đã sao chép');}};
+$('dl').onclick=()=>{
+  const t=$('out').value;if(!t){toast('Chưa có kết quả để tải');return;}
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/plain;charset=utf-8'}));a.download=fileName();a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
+$('nameIn').oninput=upFn;
+setMode('num');
+})();
+</script>
+</body>
+</html>
